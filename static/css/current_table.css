@@ -1,0 +1,26 @@
+.container {
+  display: flex;
+  justify-content: center; /* 中心对齐 */
+  align-items: flex-start; /* 顶部对齐 */
+  flex-wrap: wrap; /* 允许换行 */
+  margin-top: 100px;
+  margin-left: 310px;
+}
+
+.ocean-current-table {
+  width: 60%; /* 表格占60%的宽度 */
+  margin-right: 20px; /* 和echarts容器之间的间距 */
+}
+
+.echarts-container {
+  width: 35%; /* Echarts容器占35%的宽度 */
+  display: flex;
+  flex-direction: column; /* 上下排列 */
+  align-items: center; /* 中心对齐 */
+}
+
+.echart-box {
+  width: 320px;
+  height: 320px;
+  margin-bottom: 20px; /* Echarts之间的间距 */
+}

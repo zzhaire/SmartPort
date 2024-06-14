@@ -1,0 +1,40 @@
+.el-menu-demo {
+    background-color: #395e84;
+    color: #fff;
+    font-weight: bold;
+    /* 设置字体粗细 */
+    font-size: 16px;
+    /* 设置字体大小 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* 垂直居中对齐 */
+}
+
+.el-menu-demo .align-right {
+    margin-left: auto;
+}
+
+.el-menu-demo .el-menu-item:hover,
+.el-menu-demo .el-submenu__title:hover {
+    background-color: #1f2d3a;
+}
+
+.el-menu-demo .el-menu-item.is-active {
+    background-color: #1f2d3a;
+    color: #ffd04b;
+}
+
+.el-menu-demo .el-submenu__title {
+    color: #fff;
+    font-weight: bold;
+    /* 设置子菜单标题字体粗细 */
+    font-size: 16px;
+    /* 设置子菜单标题字体大小 */
+}
+
+.el-menu-item #navbar-right{
+    font-weight: bold;
+    font-size: 16px;
+    color:#ffd04b
+}

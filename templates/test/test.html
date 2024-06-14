@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue Axios Form</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <el-form :model="form" ref="form" label-width="120px" class="demo-form">
+            <h2>Submit Form</h2>
+            <el-form-item label="Name">
+                <el-input v-model="form.name" placeholder="Enter your name"></el-input>
+            </el-form-item>
+            <el-form-item label="Email">
+                <el-input v-model="form.email" placeholder="Enter your email"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="submitForm">Submit</el-button>
+            </el-form-item>
+        </el-form>
+
+        <el-button @click="getFormData">Get Form Data</el-button>
+        <el-table :data="retrievedData" style="width: 100%">
+            <el-table-column prop="fields.description" label="Name"></el-table-column>
+            <el-table-column prop="fields.recorded_at" label="Email"></el-table-column>
+        </el-table>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    form: {
+                        name: '',
+                        email: ''
+                    },
+                    retrievedData: []
+                };
+            },
+            methods: {
+                submitForm() {
+                    axios.post('/api/submit', this.form)
+                        .then(response => {
+                            console.log(response.data);
+                            this.$message({
+                                type: 'success',
+                                message: 'Form submitted successfully!'
+                            });
+                        })
+                        .catch(error => {
+                            console.error(error);
+                            this.$message({
+                                type: 'error',
+                                message: 'Failed to submit form!'
+                            });
+                        });
+                },
+                getFormData() {
+                    axios.get('/test_get')
+                        .then(response => {
+                            this.retrievedData = JSON.parse(response.data);
+                            console.log(this.retrievedData)
+                            this.$message({
+                                type: 'success',
+                                message: 'Data retrieved successfully!'
+                            });
+
+                        })
+                        .catch(error => {
+                            console.error(error);
+                            this.$message({
+                                type: 'error',
+                                message: 'Failed to retrieve data!'
+                            });
+                        });
+                }
+            }
+        });
+    </script>
+
+    <style>
+        .demo-form {
+            width: 400px;
+            margin: auto;
+        }
+    </style>
+</body>
+
+</html>

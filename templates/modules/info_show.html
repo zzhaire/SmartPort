@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/info_show.css' %}">
+{% endblock %}
+{% block context %}
+<div id="user-info-app" class="user-info-descriptions">
+    <el-descriptions title="用户信息" :column="2" border>
+        <el-descriptions-item label="用户主键">
+            <el-tag><span v-text="userInfo.user_id"></span></el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="船舶编号">
+            <el-button type="success" v-if="userInfo.ship_id !== 'Null'">
+                <span v-text="userInfo.ship_id"></span>
+            </el-button>
+            <el-tag type="danger" v-else>未绑定</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="船舶类型">
+            <el-button type="success" v-if="userInfo.type !== 'Null'">
+                <span v-text="userInfo.type"></span>
+            </el-button>
+            <el-tag type="danger" v-else>未绑定</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="联系方式">
+            <el-button type="success" v-if="userInfo.contact_info !== ''">
+                <span v-text="userInfo.type"></span>
+            </el-button>
+            <el-tag type="danger" v-else>未绑定</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="吃水深度">
+            <el-button type="success" v-if="userInfo.draft_depth != 0.00">
+                <span v-text="userInfo.draft_depth"></span>
+            </el-button>
+            <el-tag type="danger" v-else>未绑定</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="登录状态">
+            <el-tag :type="userInfo.login_status ? 'success' : 'danger'">
+                <span v-text="userInfo.login_status ? '已登录' : '未登录'"></span>
+            </el-tag>
+        </el-descriptions-item>
+        <!-- <el-descriptions-item label="密码">
+            <el-tag><span v-text="userInfo.pwd"></span></el-tag>
+        </el-descriptions-item> -->
+    </el-descriptions>
+</div>
+{% endblock %}
+{% block bottom %}
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="{% static 'js/info_show.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/weather_table.css' %}">
+{% endblock %}
+{% block context %}
+
+<div id="weather-app" class="container">
+  <div class="weather-table">
+    <el-table :data="paginatedData" style="width: 100%;">
+      <el-table-column prop="time" label="时间" width="180">
+      </el-table-column>
+      <el-table-column prop="description" label="描述" width="180">
+      </el-table-column>
+      <el-table-column prop="rainfall" label="降雨" width="180">
+      </el-table-column>
+      <el-table-column prop="temperature" label="气温" width="180">
+      </el-table-column>
+      <el-table-column prop="warning_level" label="警告等级" width="180">
+        <template slot-scope="scope">
+          <el-tag :type="getTagType(scope.row.warning_level)">
+            <span v-html="getWarningText(scope.row.warning_level)"></span>
+          </el-tag>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-pagination @current-change="handlePageChange" :current-page="currentPage" :page-size="12"
+      layout="prev, pager, next" :total="weatherData.length">
+    </el-pagination>
+  </div>
+  <div class="echarts-container">
+    <div id="echart-line" class="echart-box"></div>
+    <div id="echart-pie" class="echart-box"></div>
+    <div id="echart-temp" class="echart-box"></div>
+    <div id="echart-rainfall" class="echart-box"></div>
+  </div>
+</div>
+
+<!-- 隐藏的容器，用于传递数据 -->
+<table id="weather-data" style="display:none;">
+  {% for weather in weather_data %}
+  <tr>
+    <td>{{ weather.recorded_at }}</td>
+    <td>{{ weather.description }}</td>
+    <td>{{ weather.warning_level}}</td>
+    <td>{{ weather.temperature}}</td>
+    <td>{{ weather.rainfall}}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
+{% block bottom %}
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/element-ui/lib/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+<script src="{% static 'js/weather_table.js' %}"></script>
+{% endblock %}

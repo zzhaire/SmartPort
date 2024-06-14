@@ -1,0 +1,509 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="shortcut icon" type="image/ico" href="../image/favicon.ico">
+<link href="{% static '/css/common.css' %}" rel="stylesheet" />
+<link href="{% static 'css/iconfont/iconfont.css' %}" rel="stylesheet">
+<link href="{% static '/css/home.css' %}" , rel="stylesheet">
+{% endblock %}
+
+{% block context %}
+<div id="map-app">
+    <div id="map-container"></div>
+    <div class="control-bar">
+        <el-button type="primary" @click="ttest">测试按钮</el-button>
+        <!-- <el-button type="primary" @click="zoomIn">放大</el-button> -->
+        <!-- <el-button type="primary" @click="zoomOut">缩小</el-button> -->
+        <el-button type="primary" @click="toggle2D3D"><span v-text="viewMode"></el-button>
+    </div>
+    <div class="berth-table-container">
+        <el-table :data="paginatedBerths" id="berth-table" border style="width: 100%">
+            <el-table-column prop="berth_id" label="泊位编号" width="120">
+                <template slot-scope="scope">
+                    <span v-text="scope.row.berth_id"></span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="area" label="区域" width="120">
+                <template slot-scope="scope">
+                    <span v-text="scope.row.area"></span>
+                </template>
+            </el-table-column>
+            <el-table-column label="占用状态" width="160">
+                <template slot-scope="scope">
+                    <el-button :type="scope.row.status ? 'danger' : 'success'" :disabled="scope.row.status"
+                        @click="confirmOccupy(scope.row)">
+                        <span v-text="scope.row.status ? '占用中' : '可停放'"></span>
+                    </el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-pagination background layout="prev, pager, next" :total="berths.length" :page-size="10"
+            @current-change="handlePageChange">
+        </el-pagination>
+    </div>
+    <div class="user-records-container" style="margin-top: 20px;">
+        <div v-if="userRecords.length > 0">
+            <el-table :data="userRecords" border style="width: 100%" v-if>
+                <el-table-column prop="ship_id" label="船舶编号" width="120">
+                    <template slot-scope="scope">
+                        <span v-text="scope.row.ship_id"></span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="berth_id" label="泊位编号" width="120">
+                    <template slot-scope="scope">
+                        <span v-text="scope.row.berth_id"></span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="in_time" label="停泊开始时间" width="160">
+                    <template slot-scope="scope">
+                        <span v-text="new Date(scope.row.in_time).toLocaleString()"></span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" width="120">
+                    <template slot-scope="scope">
+                        <el-button type="danger" @click="confirmLeave(scope.row)">
+                            离开
+                        </el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div v-else>
+            <el-button type="danger" disabled> 当前未停泊船舶</el-button>
+        </div>
+    </div>
+    <!-- 导航按钮 -->
+    <div class="navi-table-container">
+        <!-- <el-button type="primary" @click="toggleNavigationDialog">航道线模拟</el-button> -->
+        <el-collapse v-model="if_navi" class="navi-collapse">
+            <el-collapse-item title="航道线模拟" @click="toggleNavigationDialog">
+                <el-form label-width="100px">
+                    <el-form-item label="起点">
+                        <el-row :gutter="10">
+                            <el-col :span="4">
+                                <el-button type="primary" @click="selectStartPoint">选择起点</el-button>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-input v-model="navigation.start.name" placeholder="点击地图选择起点或手动输入"></el-input>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-input v-model="navigation.start.x" placeholder="起点X"></el-input>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-input v-model="navigation.start.y" placeholder="起点Y"></el-input>
+                            </el-col>
+                        </el-row>
+                    </el-form-item>
+                    <el-form-item label="终点">
+                        <el-row :gutter="10">
+                            <el-col :span="4">
+                                <el-button type="primary" @click="selectEndPoint">选择终点</el-button>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-input v-model="navigation.end.name" placeholder="默认值为 'Exit'"></el-input>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-input v-model="navigation.end.x" placeholder="终点X"></el-input>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-input v-model="navigation.end.y" placeholder="终点Y"></el-input>
+                            </el-col>
+                        </el-row>
+                    </el-form-item>
+                </el-form>
+                <div class="dialog-footer">
+                    <el-button @click="if_navi = false">取消</el-button>
+                    <el-button type="primary" @click="drawRoute">绘制路线</el-button>
+                    <el-button type="primary" @click="startNavigation">开始导航</el-button>
+                    <el-button type="danger" @click="endNavigation">结束导航</el-button>
+                </div>
+            </el-collapse-item>
+        </el-collapse>
+    </div>
+</div>
+
+
+<!-- {% include "modules/fixed_table.html"%} -->
+{% endblock %}
+{% block bottom %}
+<script src="{% static 'lib/esmap-3.0.min.js' %}"></script>
+<script src="{% static 'lib/jquery-2.1.4.min.js' %}"></script>
+<script src="{% static 'lib/jquery.qrcode.min.js' %}"></script>
+<script src="{% static 'lib/tips_controls.js'%}"></script>
+<script src="{% static 'lib/bootstrap.min.js' %}"></script>
+<script src="{% static 'lib/config.js' %}"></script>
+<script src="{% static 'js/fixed_table.js' %}"></script>
+<script src="{% static 'js/map.js' %}"></script>
+<!-- 不支持外部js, QAQ -->
+<script>
+    class MapApplication {
+        constructor() {
+            this.map = null;
+        }
+        initMap(mapID) {
+            this.map = new esmap.ESMap({
+                mode: esmap.MapMode.Building,
+                container: document.getElementById('map-container'),
+                mapDataSrc: "{% static 'data' %}",
+                focusAlphaMode: false,
+                focusAnimateMode: true,
+                focusAlpha: 0.9,
+                viewModeAnimateMode: true,
+                defaultScaleLevel: 1,
+                mapAudioSrc: '../lib',
+                token: 'PortToken',
+                moveToAnimateMode: true,
+                viewMode: esmap.ESViewMode.MODE_3D
+            });
+            this.map.openMapById(mapID);
+        }
+        destroyMap() {
+            if (this.map) {
+                this.map.dumpScene();
+                this.map = null;
+            }
+        }
+        on(eventName, callback) {
+            if (this.map) {
+                this.map.on(eventName, callback);
+            }
+        }
+    }
+
+    // 将 MapApplication 实例化为全局变量
+    window.mapApp = new MapApplication();
+    document.addEventListener("DOMContentLoaded", function () {
+        let navi = null
+        new Vue({
+            el: '#map-app',
+            data: {
+                mapID: "U1714504898635",
+                viewMode: '2D',
+                berths: [], // 这里存储所有泊位数据
+                currentPage: 1, // 当前页码
+                userRecords: [],
+                if_navi: false,
+                navigation: {
+                    start: {
+                        x: null,
+                        y: null,
+                        name: null,
+                    },
+                    end: {
+                        x: null,
+                        y: null,
+                        name: null
+                    },
+                    selectingPoint: false,
+                    selectingStart: false,
+                },
+            },
+
+            computed: {
+                paginatedBerths() {
+                    const start = (this.currentPage - 1) * 10;
+                    const end = start + 10;
+                    return this.berths.slice(start, end);
+                }
+            },
+            mounted() {
+                // 使用全局变量初始化三维场景
+                mapApp.initMap(this.mapID);
+                // 设置事件监听器
+                mapApp.on('mapClickNode', this.handleMapClick);
+                mapApp.on('loadComplete', this.handleLoadComplete);
+                mapApp.on('progressComplete', this.handleProgressComplete);
+                // navi.on('success', this.successNavi);
+                // 路径规划成});
+                mapApp.map.showCompass = true;
+                // 加载泊位数据
+                this.loadBerths();
+                this.loadUserRecords();
+
+            },
+            beforeDestroy() {
+                // 销毁三维场景
+                mapApp.destroyMap();
+            },
+            methods: {
+                toggleNavigationDialog() {
+                    this.if_navi = !this.if_navi;
+                },
+                selectStartPoint() {
+                    this.selectingPoint = true;
+                    this.selectingStart = true;
+                },
+                selectEndPoint() {
+                    this.selectingPoint = true;
+                    this.selectingStart = false;
+                },
+                handleMapClick(event) {
+                    // 处理点击事件
+                    console.log("mapClickNode event:", event);
+                    if (this.selectingPoint) {
+                        if (this.selectingStart) {
+                            this.navigation.start.x = event.mapCoord.x;
+                            this.navigation.start.y = event.mapCoord.y;
+                            this.navigation.start.name = event.name;
+                            navi.setStartPoint({
+                                name: this.navigation.start.name,
+                                x: this.navigation.start.x,
+                                y: this.navigation.start.y,
+                                fnum: 1,
+                                height: 0.020,
+                                url: "{% static 'images/start.png' %}",
+                                size: 64
+                            });
+                        } else {
+                            this.navigation.end.x = event.mapCoord.x;
+                            this.navigation.end.y = event.mapCoord.y;
+                            this.navigation.end.name = event.name;
+                            // 设置终点
+                            navi.setEndPoint({
+                                name: this.navigation.end.name,
+                                x: this.navigation.end.x,
+                                y: this.navigation.end.y,
+                                fnum: 1,
+                                height: 0.020,
+                                url: "{% static 'images/end.png' %}",
+                                size: 64
+                            });
+                        }
+                        this.selectingPoint = false;
+                    }
+                },
+                handleLoadComplete() {
+                    // 处理加载完成事件
+                    this.$message({
+                        message: '港口场景加载完成',
+                        type: 'success'
+                    });
+                    this.loadBerthColors();
+                    navi = new esmap.ESNavigation({
+                        map: window.mapApp.map,
+                        locationMarkerUrl: "{% static 'images/pointer.png'%} ",
+                        locationMarkerSize: 50,
+                        speed: 1,
+                        maxEnd: 0.001,
+                        followAngle: true,
+                        followPosition: true,
+                        followGap: 3,
+                        tiltAngle: 30,
+                        scaleLevel: 0,
+                        // 设置导航线的样式
+                        lineStyle: {
+                            color: '#33cc61',
+                            //设置线为导航线样式
+                            fixedWidth: true,
+                            lineType: esmap.ESLineType.ESARROW,
+                            lineWidth: 6,
+                            //设置边线的颜色   
+                            godEdgeColor: '#920000',
+                            //设置箭头颜色
+                            godArrowColor: "#ff0000"
+                        }
+                    });
+                },
+                handleProgressComplete() {
+                    // 处理加载进度完成事件
+                    this.$message({
+                        message: '场景加载完成',
+                        type: 'success'
+                    });
+                    this.loadBerthColors();
+                },
+                toggle2D3D() {
+                    if (window.mapApp && window.mapApp.map) {
+                        if (this.viewMode === '2D') {
+                            window.mapApp.map.viewMode = esmap.ESViewMode.MODE_3D;
+                            this.viewMode = '3D';
+                        } else {
+                            window.mapApp.map.viewMode = esmap.ESViewMode.MODE_2D;
+                            this.viewMode = '2D';
+                        }
+                    }
+                },
+                loadBerths() {
+                    axios.get('/api/berths/')
+                        .then(response => {
+                            this.berths = response.data;
+                        })
+                        .catch(error => {
+                            console.error('Error loading berths:', error);
+                            this.$message({
+                                type: 'error',
+                                message: '加载泊位数据失败!'
+                            });
+                        });
+                    // console.log(this.berths)
+                },
+                loadUserRecords() {
+                    axios.get('/api/user_records/')
+                        .then(response => {
+                            this.userRecords = response.data;
+                        })
+                        .catch(error => {
+                            console.error('Error loading user records:', error);
+                            this.$message({
+                                type: 'error',
+                                message: '加载用户记录失败!'
+                            });
+                        });
+                },
+                handlePageChange(page) {
+                    this.currentPage = page;
+                },
+                confirmOccupy(berth) {
+                    this.$confirm('确定要占用这个泊位吗？', '确认', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.occupyBerth(berth);
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '取消操作'
+                        });
+                    });
+                },
+                occupyBerth(berth) {
+                    axios.post('/api/occupy_berth/', { berth_id: berth.berth_id })
+                        .then(response => {
+                            berth.status = true;
+                            this.loadUserRecords();
+                            const name = berth.berth_id.charAt(0).toLowerCase() + berth.berth_id.slice(1).trim();
+                            window.mapApp.map.changeModelColor({
+                                name: name,
+                                color: '#800080' // 红色表示占用
+                            });
+                            this.$message({
+                                type: 'success',
+                                message: '泊位占用成功!'
+                            });
+                        })
+                        .catch(error => {
+                            if (error.response.data.error === "User has not bound a ship") {
+                                this.$message({
+                                    type: 'warning',
+                                    message: '您还未绑定船舶，请先绑定船舶。'
+                                });
+                            }
+                            else {
+                                this.$message({
+                                    type: 'error',
+                                    message: error.response.data.error || '泊位占用失败!'
+                                });
+                            }
+                        });
+                },
+                ttest() {
+                    // console.log(this.berths)
+                    window.mapApp.map.changeModelColor({
+                        name: "sberth01",
+                        color: '#00ff00'
+                    })
+                },
+                leaveBerth(record) {
+                    axios.post('/api/leave_berth/', { record_id: record.record_id })
+                        .then(response => {
+                            this.loadUserRecords(); // 重新加载用户记录
+                            console.log(this.userRecords)
+                            const name = record.berth_id.charAt(0).toLowerCase() + record.berth_id.slice(1).trim();
+                            window.mapApp.map.changeModelColor({
+                                name: name,
+                                color: '#00ff00' // 绿色表示未占用
+                            });
+                            this.$message({
+                                type: 'success',
+                                message: '成功离开泊位!'
+                            });
+                        })
+                        .catch(error => {
+                            this.$message({
+                                type: 'error',
+                                message: error.response.data.error || '离开泊位失败!'
+                            });
+                        });
+                },
+                confirmLeave(record) {
+                    this.$confirm('确定要离开这个泊位吗？', '确认', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.leaveBerth(record);
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '取消操作'
+                        });
+                    });
+                },
+                loadBerthColors() {
+                    axios.get('/api/berths/')
+                        .then(response => {
+                            const berths = response.data;
+                            berths.forEach(berth => {
+                                const name = berth.berth_id.charAt(0).toLowerCase() + berth.berth_id.slice(1);
+                                const color = berth.status ? '#ff0000' : '#00ff00'; // 假设占用是红色，未占用是绿色
+                                // console.log(name, color)
+                                window.mapApp.map.changeModelColor({
+                                    name: name,
+                                    color: color
+                                });
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error loading berths:', error);
+                            this.$message({
+                                type: 'error',
+                                message: '加载泊位数据失败!'
+                            });
+                        });
+                },
+                drawRoute() {
+
+                    navi.getRouteResult({
+                        drawRoute: true
+                    });
+
+                    this.$message({
+                        message: `导航路线已绘制：从 ${this.navigation.start.name} 到 ${this.navigation.end.name}`,
+                        type: 'success'
+                    });
+                },
+                startNavigation() {
+                    // 根据导航的模式选择语音播报
+
+                    window.mapApp.map.ESAudioTool.playSoundByName('startNaving'); // 开始步行导航
+
+                    // 导航开始
+                    navi.simulate();
+
+                    this.$message({
+                        message: '导航开始',
+                        type: 'success'
+                    });
+                    // this.navigationDialogVisible = false;
+                    // this.selectingPoint = false;
+                },
+                endNavigation() {
+                    navi.stop();
+                    navi.clearAll()
+                },
+
+                successNavi() {
+                    this.$message({
+                        message: '导航已结束',
+                        type: 'info'
+                    });
+                }
+            }
+        });
+    });
+
+
+</script>
+
+{% endblock %}

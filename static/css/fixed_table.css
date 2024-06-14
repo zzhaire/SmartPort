@@ -1,0 +1,39 @@
+.floating-table-container {
+    position: fixed;
+    top: 200px;
+    left: 90%;
+    transform: translateX(-50%);
+    z-index: 1000; /* 确保表格在最上层 */
+    background-color: rgba(255, 255, 255, 0.9); /* 半透明背景 */
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    width: 200px;
+    max-width: 100%;
+}
+
+.floating-table {
+    width: 100%;
+}
+
+.floating-table th, .floating-table td {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.floating-table th {
+    background-color: #f4f4f4;
+}
+
+.floating-table tbody {
+    display: block;
+    max-height: 200px; /* 适应5行高度 */
+    overflow-y: auto; /* 垂直滚动 */
+}
+
+.floating-table thead, .floating-table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/info_table.css' %}">
+{% endblock %}
+{% block context %}
+<div id="update-pwd-app">
+    <el-form :model="form" ref="form" label-width="120px" class="demo-form">
+        <h2>修改密码</h2>
+
+        <el-form-item label="当前密码">
+            <el-input type="password" v-model="form.current_pwd" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item label="新密码">
+            <el-input type="password" v-model="form.new_pwd" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item label="确认新密码">
+            <el-input type="password" v-model="form.confirm_pwd" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item>
+            <el-button type="primary" @click="confirmSubmit">修改</el-button>
+        </el-form-item>
+    </el-form>
+</div>
+{% endblock %}
+{% block bottom %}
+<script src="{% static 'js/update_pwd.js' %}"></script>
+{% endblock %}

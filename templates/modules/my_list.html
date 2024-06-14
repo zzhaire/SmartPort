@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/my_list.css' %}">
+{% endblock %}
+{% block context %}
+<div id="record-table-app" class="record-table">
+    <el-table :data="records" class="my_list">
+        <!-- <el-table-column prop="fields.record_id" label="订单编号" width="180"></el-table-column> -->
+        <el-table-column prop="fields.time" label="消费时间" width="180" align="center"></el-table-column>
+        <el-table-column prop="fields.server_info" label="消费简介" width="180" align="center"></el-table-column>
+        <el-table-column prop="fields.price" label="金额" width="180" align="center"></el-table-column>
+        <el-table-column prop="fields.contact_info" label="联系方式" width="180" align="center"></el-table-column>
+        <el-table-column label="操作">
+            <template slot-scope="scope">
+                <el-button @click="viewDetails(scope.row)" type="primary" size="small">查看详情</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+
+    <el-pagination background layout="prev, pager, next" :total="records.length" :page-size="12"
+        @current-change="handlePageChange">
+    </el-pagination>
+
+</div>
+{% endblock %}
+{% block bottom %}
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="{% static 'js/my_list.js' %}"></script>
+{% endblock %}

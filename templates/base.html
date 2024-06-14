@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title%}智慧港口平台{% endblock%}</title>
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <link href="{% static 'css/base.css' %}" rel="stylesheet">
+  <link href="{% static 'css/navbar.css' %}" rel="stylesheet">
+  <!-- <link href="{% static 'css/fixed_table.css' %}" rel="stylesheet"> -->
+  <link href="{% static 'lib/bootstrap.min.css' %}" rel="stylesheet" />
+  {% block head %}{% endblock %}
+</head>
+
+<body>
+  {% include "modules/navbar.html"%}
+  {% block context %}{% endblock %}
+</body>
+
+<script src="{% static '/lib/jquery.min.js' %}"></script>
+<script src="{% static '/lib/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/navbar.js' %}"></script>
+<script src="{% static 'js/fixed_table.js' %}"></script>
+{% block bottom %}{% endblock %}
+
+</html>

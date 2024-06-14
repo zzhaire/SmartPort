@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+<link href="{% static '/css/style.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block context %}
+<div class="login-box">
+    <h2>用户登录</h2>
+    <form id="login-form">
+        {% csrf_token %}
+        <div class="user-box">
+            <input type="text" id="username" name="username" required>
+            <label>账号</label>
+        </div>
+
+        <div class="user-box">
+            <input type="password" id="password" name="password" required>
+            <label>密码</label>
+        </div>
+
+        <a href="#" id="login-button">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            登录
+        </a>
+
+        <a href="{% url 'register' %}">没有账号？点击注册</a>
+        {{message}}
+    </form>
+</div>
+
+<script>
+    document.getElementById("login-button").addEventListener("click", function (event) {
+        event.preventDefault(); // 阻止默认的链接跳转行为
+        var username = document.getElementById('username').value;
+        var password = document.getElementById('password').value;
+        if (username.trim() === '' || password.trim() === '') {
+            alert("输入不能为空，请重新输入！");
+            return;
+        }
+
+        var form = document.getElementById("login-form"); // 获取表单元素
+        var formData = new FormData(form); // 创建一个 FormData 对象来收集表单数据
+
+        // 发送 POST 请求
+        fetch("{% url 'login' %}", {
+            method: "POST",
+            body: formData
+        })
+            .then(function (response) {
+                if (response.ok) {
+                    return response.json(); // 解析响应数据为 JSON
+                } else {
+                    throw new Error("请求失败");
+                }
+            })
+            .then(function (responseData) {
+                // 在这里处理服务端返回的数据
+                console.log(responseData);
+                alert(responseData.message);
+                // 清空输入框的内容
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+
+                if (responseData.message === '登录成功') {
+                    window.location.href = responseData.redirect_url;  // 修改这一行
+                }
+            })
+            .catch(function (error) {
+                // 请求失败的处理逻辑
+                console.error(error);
+            });
+    });
+</script>
+
+{% endblock %}
+
+</html>

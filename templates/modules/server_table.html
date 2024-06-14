@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/server_table.css' %}">
+{% endblock %}
+
+{% block context %}
+<div id="server-app">
+    <el-tabs v-model="activeName">
+        <el-tab-pane label="船舶检修" name="first">
+            <div class="form-container">
+                <el-form :model="form" ref="form" label-width="120px" class="demo-form">
+                    <el-form-item label="船舶编号">
+                        <el-input v-model="form.ship_id"></el-input>
+                    </el-form-item>
+                    <el-form-item label="船舶类型">
+                        <el-select v-model="form.type" placeholder="请选择">
+                            <el-option label="小型船" value="小型船"></el-option>
+                            <el-option label="小型货船" value="小型货船"></el-option>
+                            <el-option label="中型货轮" value="中型货轮"></el-option>
+                            <el-option label="大型船舶" value="大型船舶"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="服务类型">
+                        <el-checkbox-group v-model="form.services">
+                            <el-checkbox label="常规检修"></el-checkbox>
+                            <el-checkbox label="船体补漆"></el-checkbox>
+                            <el-checkbox label="船体保养"></el-checkbox>
+                            <el-checkbox label="故障修复检测"></el-checkbox>
+                        </el-checkbox-group>
+                    </el-form-item>
+                    <el-form-item label="联系方式">
+                        <el-input v-model="form.contact_info"></el-input>
+                    </el-form-item>
+                    <el-form-item label="预约时间">
+                        <el-date-picker v-model="form.appointment_time" type="datetime"
+                            placeholder="选择日期和时间"></el-date-picker>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="calculateMaintenancePrice">生成订单</el-button>
+                        <el-button type="danger" @click="cleanForm">清除内容</el-button>
+                    </el-form-item>
+                </el-form>
+                <div v-if="form.price && form.description" class="price-description">
+                    <p>价格: <span v-text="form.price"></span> 元</p>
+                    <p>描述: <span v-text="form.description"></span></p>
+                    <el-button type="success" @click="submitForm">提交</el-button>
+                </div>
+            </div>
+        </el-tab-pane>
+        <el-tab-pane label="燃油舱建" name="second">
+            <div class="form-container">
+                <el-form :model="form" ref="form" label-width="120px" class="demo-form">
+                    <el-form-item label="船舶编号">
+                        <el-input v-model="form.ship_id"></el-input>
+                    </el-form-item>
+                    <el-form-item label="船舶类型">
+                        <el-select v-model="form.type" placeholder="请选择">
+                            <el-option label="小型船" value="小型船"></el-option>
+                            <el-option label="小型货船" value="小型货船"></el-option>
+                            <el-option label="中型货轮" value="中型货轮"></el-option>
+                            <el-option label="大型船舶" value="大型船舶"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="燃油类型">
+                        <el-select v-model="form.product_type" placeholder="请选择">
+                            <el-option label="A(1.5¥/ml)" value=1.5></el-option>
+                            <el-option label="B(1.8¥/ml)" value=1.8></el-option>
+                            <el-option label="C(2.1¥/ml)" value=2.1></el-option>
+                            <el-option label="D(2.3¥/ml)" value=2.3></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="燃油数量">
+                        <el-select v-model="form.num" placeholder="请选择">
+                            <el-option label="2000" value=2000></el-option>
+                            <el-option label="5000" value=5000></el-option>
+                            <el-option label="10000" value=10000></el-option>
+                            <el-option label="15000" value=15000></el-option>
+                            <el-option label="20000" value=20000></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="联系方式">
+                        <el-input v-model="form.contact_info"></el-input>
+                    </el-form-item>
+                    <el-form-item label="预约时间">
+                        <el-date-picker v-model="form.appointment_time" type="datetime"
+                            placeholder="选择日期和时间"></el-date-picker>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="calculateFuelPrice">生成订单</el-button>
+                        <el-button type="danger" @click="cleanForm">清除内容</el-button>
+                    </el-form-item>
+                    <div v-if="form.price && form.description" class="price-description">
+                        <p>价格: <span v-text="form.price"></span> 元</p>
+                        <p>描述: <span v-text="form.description"></span></p>
+                        <el-button type="success" @click="submitForm">提交</el-button>
+                    </div>
+            </div>
+        </el-tab-pane>
+        <el-tab-pane label="港口住宿" name="third">  
+            <div class="form-container">
+                <el-form :model="form" ref="accommodationForm">
+                    <el-form-item label="房间类型">
+                        <el-select v-model="form.product_type" placeholder="请选择">
+                            <el-option label="单人间" value="单人间"></el-option>
+                            <el-option label="双人间" value="双人间"></el-option>
+                            <el-option label="套房" value="套房"></el-option>
+                            <el-option label="商务房" value="商务房"></el-option>
+                        </el-select>
+                    </el-form-item>
+                        <el-form-item label="房间数量">
+                            <el-select v-model="form.num" placeholder="请选择">
+                                <el-option label="1" value=1></el-option>
+                                <el-option label="2" value=2></el-option>
+                                <el-option label="3" value=3></el-option>
+                                <el-option label="4" value=4></el-option>
+                                <el-option label="5" value=5></el-option>
+                                <el-option label="6" value=6></el-option>
+                                <el-option label="7" value=7></el-option>
+                                <el-option label="8" value=8></el-option>
+                                <el-option label="9" value=9></el-option>
+                                <el-option label="10" value=10></el-option>
+                            </el-select>
+                        </el-form-item>
+                    <el-form-item label="联系方式">
+                        <el-input v-model="form.contact_info"></el-input>
+                    </el-form-item>
+                    <el-form-item label="预约时间">
+                        <el-date-picker v-model="form.appointment_time" type="datetime"
+                            placeholder="选择日期和时间"></el-date-picker>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="calculateHotel">生成订单</el-button>
+                        <el-button type="danger" @click="cleanForm">清除内容</el-button>
+                    </el-form-item>
+                    <div v-if="form.price && form.description" class="price-description">
+                        <p>价格: <span v-text="form.price"></span> 元</p>
+                        <p>描述: <span v-text="form.description"></span></p>
+                        <el-button type="success" @click="submitForm">提交</el-button>
+                    </div>
+            </div>
+        </el-tab-pane>
+        <!-- <el-tab-pane label="物资购买" name="fourth"> 
+            <div class="form-container">
+                <el-form :model="forms.supplies" ref="suppliesForm">
+                    
+                    <el-form-item label="物资类型">
+                        <el-select v-model="forms.supplies.type" placeholder="请选择">
+                            <el-option label="类型A" value="类型A"></el-option>
+                            <el-option label="类型B" value="类型B"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="数量">
+                        <el-input v-model="forms.supplies.quantity"></el-input>
+                    </el-form-item>
+                    <el-form-item label="联系方式">
+                        <el-input v-model="forms.supplies.contact_info"></el-input>
+                    </el-form-item>
+                    <el-form-item label="预约时间">
+                        <el-date-picker v-model="forms.supplies.appointment_time" type="datetime"
+                            placeholder="选择日期和时间"></el-date-picker>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="calculatePrice">生成订单</el-button>
+                    </el-form-item>
+                </el-form>
+                <div v-if="forms.supplies.price && forms.supplies.description" class="price-description">
+                    <p>价格: <span>{{ forms.supplies.price }}</span> 元</p>
+                    <p>描述: <span>{{ forms.supplies.description }}</span></p>
+                    <el-button type="success" @click="submitForm"> 提交</el-button>
+                </div>
+            </div>
+        </el-tab-pane> -->
+    </el-tabs>
+</div>
+{% endblock %}
+
+{% block bottom %}
+<script src="{% static 'js/server_table.js' %}"></script>
+{% endblock %}

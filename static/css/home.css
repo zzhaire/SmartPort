@@ -1,0 +1,87 @@
+/* styles.css */
+html,
+body,
+#map-container {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+.control-bar {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    gap: 10px;
+}
+
+.berth-table-container {
+    position: fixed;
+    top: 80px;
+    right: 10px;
+    z-index: 1000;
+    width: 421px;
+    /* 增加宽度 */
+    max-height: 90%;
+    overflow-y: auto;
+    background-color: rgba(245, 245, 245, 0.8);
+    /* 半透明背景颜色 */
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#berth-table th,
+#berth-table td {
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.5);
+    /* 表格内容半透明 */
+}
+
+.navi-table-container {
+    position: fixed;
+    top: 80px;
+    left: 85px;
+    z-index: 1000;
+    width: 756px;
+    /* 增加宽度 */
+    max-height: 90%;
+    overflow-y: auto;
+    background-color: rgba(245, 245, 245, 0.8);
+    /* 半透明背景颜色 */
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navi-collapse .el-collapse-item__header {
+    background-color: #409EFF;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+}
+
+.navi-collapse .el-collapse-item__header:hover {
+    background-color: #66b1ff;
+}
+
+.navi-collapse .el-form {
+    padding: 20px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dialog-footer {
+    position: relative;
+    top: 15px;
+    left: 156px;
+}
+.user-records-container{
+    position: fixed;
+    bottom: 20px;
+    left:100px;
+}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/records.css' %}">
+{% endblock %}
+{% block context %}
+
+<div id="record-app">
+    <div class="user-records-container">
+        <el-table :data="paginatedRecords" border style="width: 100%">
+            <el-table-column prop="record_id" label="记录ID" width="150"></el-table-column>
+            <el-table-column prop="ship_id" label="船舶编号" width="120"></el-table-column>
+            <el-table-column prop="berth_id" label="泊位编号" width="120"></el-table-column>
+            <el-table-column prop="in_time" label="入港时间" width="160">
+                <template slot-scope="scope">
+                    <span v-text="new Date(scope.row.in_time).toLocaleString()"></span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="out_time" label="离港时间" width="160">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.out_time" v-text="new Date(scope.row.out_time).toLocaleString()"></span>
+                    <span v-else>---</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="状态" width="100">
+                <template slot-scope="scope">
+                    <el-tag :type="scope.row.berth_state ? 'success' : 'info'">
+                        <span v-text="scope.row.berth_state ? '当前停放' : '已离开'"></span>
+                    </el-tag>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-pagination background layout="prev, pager, next" :total="userRecords.length" :page-size="12"
+            @current-change="handlePageChange">
+        </el-pagination>
+    </div>
+</div>
+
+
+{% endblock %}
+{% block bottom %}
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/element-ui/lib/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+<script src="{% static 'js/records.js' %}"></script>
+{% endblock %}

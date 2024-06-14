@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/info_table.css' %}">
+{% endblock %}
+
+{% block context %}
+<div id="info-app">
+    <table id="hidden-data" style="display: none;">
+        <tr id="user-data" data-user_id="{{ user_data.user_id }}" 
+                           data-ship_id="{{ user_data.ship_id }}" 
+                           data-draft_depth="{{ user_data.draft_depth }}" 
+                           data-type="{{ user_data.type }}" 
+                           data-contact_info="{{ user_data.contact_info }}"></tr>
+    </table>
+    <el-form :model="form" ref="form" label-width="120px" class="demo-form">
+        <h2>{{ user_data.user_id }}的个人信息</h2>
+
+        <el-form-item label="船舶编号">
+            <el-input v-model="form.ship_id" :placeholder="form.ship_id ? '' : '未绑定'"></el-input>
+        </el-form-item>
+
+        <el-form-item label="吃水深度">
+            <el-select v-model="form.draft_depth" placeholder="请选择">
+                <el-option label="10m" value="10"></el-option>
+                <el-option label="20m" value="20"></el-option>
+                <el-option label="40m" value="40"></el-option>
+                <el-option label="80m" value="80"></el-option>
+                <el-option label="100m" value="100"></el-option>
+            </el-select>
+        </el-form-item>
+
+        <el-form-item label="船舶类型">
+            <el-select v-model="form.type" placeholder="请选择">
+                <el-option label="小型船" value="小型船"></el-option>
+                <el-option label="小型货船" value="小型货船"></el-option>
+                <el-option label="中型货轮" value="中型货轮"></el-option>
+                <el-option label="大型船舶" value="大型船舶"></el-option>
+            </el-select>
+        </el-form-item>
+
+        <el-form-item label="联系方式">
+            <el-input v-model="form.contact_info" :placeholder="form.contact_info ? '' : '未绑定'"></el-input>
+        </el-form-item>
+
+        <el-form-item>
+            <el-button type="primary" @click="confirmSubmit">修改</el-button>
+        </el-form-item>
+
+        <el-form-item>
+            <el-button type="danger" @click="confirmUpdatePwd">修改密码</el-button>
+        </el-form-item>
+    </el-form>
+</div>
+{% endblock %}
+
+{% block bottom %}
+<script src="{% static 'js/info_table.js' %}"></script>
+{% endblock %}

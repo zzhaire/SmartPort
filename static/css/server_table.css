@@ -1,0 +1,22 @@
+.el-tabs {
+    margin: 20px;
+}
+
+.el-form-item {
+    margin-bottom: 20px;
+}
+
+.form-container {
+    width: 50%;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #dcdcdc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}
+
+.price-description {
+    margin-top: 20px;
+    padding: 10px;
+    border-top: 1px solid #dcdcdc;
+}

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/current_table.css' %}">
+{% endblock %}
+{% block context %}
+
+<div id="ocean-current-app" class="container">
+    <div class="ocean-current-table">
+        <el-table :data="paginatedData" style="width: 100%; margin: auto;">
+            <el-table-column prop="time" label="时间" width="180">
+                <template slot-scope="scope">
+                    <span v-text="scope.row.time"></span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="silt_condition" label="淤沙状态" width="180">
+                <template slot-scope="scope">
+                    <span v-text="scope.row.silt_condition"></span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="depth" label="深度" width="180">
+                <template slot-scope="scope">
+                    <span v-text="scope.row.depth"></span>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-pagination @current-change="handlePageChange" :current-page="currentPage" :page-size="12"
+            layout="prev, pager, next" :total="oceanCurrentData.length" style="text-align: center; margin-top: 20px;">
+        </el-pagination>
+    </div>
+    <div class="echarts-container">
+        <div id="echart-depth" class="echart-box"></div>
+        <div id="echart-silt" class="echart-box"></div>
+    </div>
+</div>
+
+<!-- 隐藏的容器，用于传递数据 -->
+<table id="ocean-current-data" style="display: none;">
+    {% for ocean in ocean_current_data %}
+    <tr>
+        <td>{{ ocean.recorded_at }}</td>
+        <td>{{ ocean.silt_condition }}</td>
+        <td>{{ ocean.depth }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<!-- 隐藏的容器，用于传递数据 -->
+<table id="ocean-current-data" style="display: none;">
+    {% for ocean in ocean_current_data %}
+    <tr>
+        <td>{{ ocean.recorded_at }}</td>
+        <td>{{ ocean.silt_condition }}</td>
+        <td>{{ ocean.depth }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+
+{% endblock %}
+{% block bottom %}
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/element-ui/lib/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+<script src="{% static 'js/current_table.js' %}"></script>
+{% endblock %}

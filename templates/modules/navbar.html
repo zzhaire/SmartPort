@@ -1,0 +1,34 @@
+<!-- templates/modules/navbar.html -->
+<div id="navbar-app">
+  <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+    <el-menu-item index="1" @click="navigateTo('/home')">首页</el-menu-item>
+    <el-submenu index="2" @click="navigateTo('/board')">
+      <template slot="title">数据面板</template>
+      <el-menu-item index="2-1" @click="navigateTo('/weather')"> 天气</el-menu-item>
+      <el-menu-item index="2-2" @click="navigateTo('/current')"> 洋流</el-menu-item>
+      <el-menu-item index="2-3" @click="navigateTo('/records')"> 停泊</el-menu-item>
+    </el-submenu>
+    <el-submenu index="3" @click="navigateTo('/server')">
+      <template slot="title">港口服务区</template>
+      <el-menu-item index="3-1" @click="navigateTo('/server')"> 线上超市</el-menu-item>
+      <el-menu-item index="3-2" @click="navigateTo('/my_list')"> 我的订单 </el-menu-item>
+    </el-submenu>
+    <el-submenu index=" 4" @click="navigateTo('/info')">
+      <template slot="title">我的信息</template>
+      <el-menu-item index="4-1" @click="navigateTo('/info/change')"> 个人信息修改</el-menu-item>
+      <el-menu-item index="4-2" @click="navigateTo('/info/show')"> 查看我的信息</el-menu-item>
+    </el-submenu>
+    <div class="align-right">
+      {% if user_id %}
+      <el-menu-item index="5">
+        <div id="navbar-right"> {{ user_id }}
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <el-button id="logout-button" @click="logout">登出</el-button>
+        </div>
+      </el-menu-item>
+      {% else %}
+      <el-button @click="navigateTo('/login')">登入</el-button>
+      {% endif %}
+    </div>
+  </el-menu>
+</div>

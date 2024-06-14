@@ -1,0 +1,17 @@
+/* user_info.css */
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    /* background: url('/static/images/bg1.gif') no-repeat center center fixed; */
+    background-size: cover;
+}
+
+.user-info-descriptions {
+    width: 50%;
+    margin: 50px auto;
+    background-color: rgba(255, 255, 255, 0.8); /* 半透明背景以提高可读性 */
+    padding: 20px;
+    border-radius: 10px;
+}

@@ -1,0 +1,21 @@
+/* my_list.css */
+.record-table {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 50px; /* 这里设置顶部外边距，根据需要调整数值 */
+}
+
+.my_list {
+    width: 80%;
+    margin: auto;
+}
+
+.el-table th, .el-table td {
+    text-align: center;
+}
+
+.el-pagination {
+    margin-top: 20px;
+}

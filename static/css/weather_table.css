@@ -1,0 +1,47 @@
+.container {
+    margin-top: 100px;
+    display: flex;
+    justify-content: space-between;
+    margin-left: 80px;
+}
+
+.el-tag--success {
+    background-color: green;
+    color: white;
+}
+
+.el-tag--warning {
+    background-color: orange;
+    color: white;
+}
+
+.el-tag--danger {
+    background-color: red;
+    color: white;
+}
+
+.el-pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.weather-table {
+    /* flex: 1; */
+    width: 1000px;
+    right: 20px
+}
+
+
+.echarts-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px;
+    flex: 1;
+    padding: 10px;
+}
+
+.echart-box {
+    width: 400px;
+    height: 400px;
+}
